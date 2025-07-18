@@ -19,9 +19,10 @@ const app = express();
 
 // ✅ CORS configuration
 const allowedOrigins = [
-  "https://comapanyregster.netlify.app",  // Your Netlify Frontend URL
-  "http://localhost:3000"                 // Local development (React)
+  "https://company-form.onrender.com",  // Render frontend
+  "http://localhost:3000"               // For local dev
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {
