@@ -17,12 +17,20 @@ connectDB();
 // Initialize app
 const app = express();
 
+// Health check routes
+app.get("/health", (req, res) => {
+  res.json({ status: "Backend is running!" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Backend is running!" });
+});
+
 // ✅ CORS configuration
 const allowedOrigins = [
   "https://company-form.onrender.com",  // Render frontend
   "http://localhost:3000"               // For local dev
 ];
-
 
 app.use(cors({
   origin: function (origin, callback) {

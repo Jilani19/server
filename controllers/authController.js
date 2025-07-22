@@ -9,7 +9,7 @@ exports.login = async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
-
+      
   try {
     const trimmedEmail = email.trim().toLowerCase();
     const admin = await Admin.findOne({ email: trimmedEmail });
