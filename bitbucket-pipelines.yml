@@ -1,0 +1,18 @@
+image: node:18
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Deploy Backend to EC2
+          caches:
+            - node
+          script:
+            - echo "Installing dependencies..."
+            - npm install
+            - echo "Deploying to EC2..."
+            - mkdir -p ~/.ssh
+            - echo "$EC2_SSH_KEY" > ~/.ssh/ec2_key.pem
+            - chmod 600 ~/.ssh/ec2_key.pem
+            - scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem -r * ec2-user@ec2-18-213-0-66.compute-1.amazonaws.com:/home/ec2-user/server
+            - ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ec2-user@ec2-18-213-0-66.compute-1.amazonaws.com "cd /home/ec2-user/server && npm install && pm2 restart backend || pm2 start server.js --name backend"
