@@ -17,38 +17,46 @@ connectDB();
 // Initialize app
 const app = express();
 
+// Health check endpoint for backend
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Backend is running!" });
+});
+
 // ✅ CORS configuration
 const allowedOrigins = [
-  "https://company-form.onrender.com",  // Render frontend
-  "http://localhost:3000"               // For local dev
+  "https://company-form.onrender.com", // Render frontend
+  "http://localhost:3000",             // Local dev
 ];
 
-
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      return callback(new Error("Not allowed by CORS"));
+      console.error("❌ Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// Preflight OPTIONS request handler
+app.options("*", cors(corsOptions));
 
 // Middleware
 app.use(express.json());
 
-// Health check route
+// Root route
 app.get("/", (req, res) => {
   res.send("🚀 Company Management API Running");
 });
 
 // API routes
-app.use("/api", companyRoutes);     // CRUD for companies
-app.use("/api", authRoutes);        // Admin login & register
+app.use("/api", companyRoutes); // CRUD for companies
+app.use("/api", authRoutes);    // Admin login & register
 
 // Swagger API docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
